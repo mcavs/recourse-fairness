@@ -146,6 +146,7 @@ p1 <- ggplot() +
   )
 
 ggsave('figures/fig_rq1_model_recourse_gaps.pdf', p1, width = 6.8, height = 2.45)
+ggsave('figures/fig_rq1_model_recourse_gaps.png', p1, width = 6.8, height = 2.45, dpi = 300)
 cat('Figure 2 saved.\n')
 
 # =============================================================
@@ -228,6 +229,7 @@ p2 <- ggplot() +
   )
 
 ggsave('figures/fig_rq2_methods_lollipop.pdf', p2, width = 6.8, height = 2.45)
+ggsave('figures/fig_rq2_methods_lollipop.png', p2, width = 6.8, height = 2.45, dpi = 300)
 cat('Figure 3 saved.\n')
 
 # =============================================================
@@ -372,4 +374,5 @@ p3 <- ggplot() +
   )
 
 ggsave('figures/fig_rq3_mitigation_gaps.pdf', p3, width = 6.8, height = 2.45)
+ggsave('figures/fig_rq3_mitigation_gaps.png', p3, width = 6.8, height = 2.45, dpi = 300)
 cat('Figure 4 saved.\n')

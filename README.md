@@ -8,39 +8,35 @@ This repository contains the replication code, curated benchmark datasets, pre-t
 
 ```
 recourse-fairness/
-├── data/                       # Pre-processed benchmark datasets
-│   ├── german_credit_train.csv
-│   ├── german_credit_test.csv
-│   ├── taiwan_credit_train.csv
-│   ├── taiwan_credit_test.csv
+├── data/                       # Curated benchmark datasets (train/test splits)
+│   ├── adult_train.csv / adult_test.csv
 │   ├── fico_heloc.csv
-│   ├── gmc_train.csv
-│   ├── gmc_test.csv
-│   ├── adult_train.csv
-│   └── adult_test.csv
+│   ├── german_credit_train.csv / german_credit_test.csv
+│   ├── gmc_train.csv / gmc_test.csv
+│   └── taiwan_credit_train.csv / taiwan_credit_test.csv
 ├── models/                     # Pre-trained baseline model bundles (GLM, RF, GBM)
-│   ├── german_credit_models.rds
-│   ├── taiwan_credit_models.rds
+│   ├── adult_models.rds
 │   ├── fico_heloc_models.rds
+│   ├── german_credit_models.rds
 │   ├── gmc_models.rds
-│   └── adult_models.rds
-├── models_mitigated/           # Pre-trained models under bias mitigations
-│   ├── german_credit_mitigated_models.rds
-│   ├── taiwan_credit_mitigated_models.rds
+│   └── taiwan_credit_models.rds
+├── models_mitigated/           # Pre-trained models under pre-processing mitigations
+│   ├── adult_mitigated_models.rds
 │   ├── fico_heloc_mitigated_models.rds
+│   ├── german_credit_mitigated_models.rds
 │   ├── gmc_mitigated_models.rds
-│   └── adult_mitigated_models.rds
-├── results/                    # Pre-computed evaluation records
+│   └── taiwan_credit_mitigated_models.rds
+├── results/                    # Empirical evaluation results
 │   ├── counterfactual_fairness_evaluation_5metrics_n50.csv
-│   ├── mitigated_counterfactual_fairness_evaluation_n50.csv
 │   ├── individual_recourse_evaluations_n50.csv
+│   ├── mitigated_counterfactual_fairness_evaluation_n50.csv
 │   └── pred_fairness_all_60.csv
-├── figures/                    # Generated vector figures for the paper
+├── figures/                    # Generated paper figures (PDF and PNG)
 │   ├── fig_recourse_illustration.pdf
-│   ├── fig_rq1_model_recourse_gaps.pdf
-│   ├── fig_rq2_methods_lollipop.pdf
-│   └── fig_rq3_mitigation_gaps.pdf
-└── scripts/                    # R execution scripts
+│   ├── fig_rq1_model_recourse_gaps.pdf (.png)
+│   ├── fig_rq2_methods_lollipop.pdf (.png)
+│   └── fig_rq3_mitigation_gaps.pdf (.png)
+└── scripts/                    # Clean replication scripts
     ├── 01_train_models.R
     ├── 02_evaluate_recourse.R
     ├── 03_generate_figures.R
@@ -51,7 +47,7 @@ recourse-fairness/
 
 ## Evaluated Benchmark Datasets
 
-| Dataset | Sample Size ($n$) | Features ($d$) | Protected Attribute | Privileged Subgroup | Unprivileged Subgroup |
+| Dataset | Sample Size (n) | Features (d) | Protected Attribute | Privileged Subgroup | Unprivileged Subgroup |
 |:---|:---:|:---:|:---|:---|:---|
 | German Credit | 800 | 20 | sex_marital | Male Single | Female / Non-Single |
 | Taiwan Credit | 7,000 | 23 | SEX | Male | Female |
@@ -61,9 +57,9 @@ recourse-fairness/
 
 ---
 
-## Reproducing Paper Figures and Tables Instantly
+## Instant Replication: Figures and Statistical Tests
 
-To reproduce the exact figures and statistical tests without re-running computationally intensive counterfactual optimizations (which require multi-objective evolutionary search over thousands of adverse profiles), pre-computed results are provided in the `results/` folder.
+To reproduce the exact figures and non-parametric statistical tests without re-running long-running evolutionary optimization (MOC) and nearest instance searches across thousands of profiles, pre-computed results are provided in `results/`.
 
 ### 1. Generating Figures
 
@@ -74,22 +70,31 @@ Rscript scripts/03_generate_figures.R
 ```
 
 This generates:
-* `figures/fig_rq1_model_recourse_gaps.pdf`: Cross-model class recourse disparity comparisons (Figure 2).
-* `figures/fig_rq2_methods_lollipop.pdf`: Counterfactual search paradigm comparison across What-If, NICE, and MOC (Figure 3).
-* `figures/fig_rq3_mitigation_gaps.pdf`: Downstream impact of Reweight, Uniform Resampling, and Preferential Resampling on recourse equity (Figure 4).
+* `figures/fig_rq1_model_recourse_gaps.pdf` / `.png`: Cross-model class recourse disparity comparisons (Figure 2).
+* `figures/fig_rq2_methods_lollipop.pdf` / `.png`: Counterfactual search paradigm comparison across What-If, NICE, and MOC (Figure 3).
+* `figures/fig_rq3_mitigation_gaps.pdf` / `.png`: Impact of Reweight, Uniform Resampling, and Preferential Resampling on recourse equity (Figure 4).
 
-### 2. Running Non-Parametric Statistical Tests
+#### Figure 2: Recourse Disparities Across Model Classes (GLM, Random Forest, GBM)
+![Figure 2](figures/fig_rq1_model_recourse_gaps.png)
 
-Run the following command to replicate the paired Friedman tests:
+#### Figure 3: Recourse Disparities Across Explanation Search Paradigms
+![Figure 3](figures/fig_rq2_methods_lollipop.png)
+
+#### Figure 4: Impact of Fairness Mitigations on Recourse Disparities
+![Figure 4](figures/fig_rq3_mitigation_gaps.png)
+
+### 2. Reproducing Statistical Tests
+
+Run the following command to replicate the paired Friedman rank-sum tests:
 
 ```bash
 Rscript scripts/04_statistical_tests.R
 ```
 
-This script verifies:
-1. Section 4.1: Model class invariance across Proximity, Sparsity, and Minimality gaps.
-2. Section 4.2: Algorithmic paradigm comparisons establishing MOC equity.
-3. Section 4.3: Disparity differences across bias mitigation interventions.
+This script reproduces:
+1. Section 4.1: Model class invariance across proximity, sparsity, and minimality disparity burdens.
+2. Section 4.2: Differences across counterfactual generation paradigms confirming MOC Pareto equity.
+3. Section 4.3: Disparity shifts across pre-processing bias mitigations.
 
 ---
 
